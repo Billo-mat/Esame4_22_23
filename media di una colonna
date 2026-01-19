@@ -1,0 +1,11 @@
+import pandas as pd
+
+# 1. Caricamento del dataset
+df_plants = pd.read_csv('Plant_data.csv', sep=';')
+
+# 2. Calcolo della media di d15N raggruppata per Plant_part
+mean_d15n_by_part = df_plants.groupby('Plant_part')['d15N'].mean()
+
+# 3. Stampa del risultato
+print("Media di d15N per ogni parte della pianta:")
+print(mean_d15n_by_part)
