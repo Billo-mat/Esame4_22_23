@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Caricamento e funzione
+df_plants = pd.read_csv('Plant_data.csv', sep=';')
+
+def gaussian(x, mu, sigma):
+    if sigma <= 0: return np.zeros_like(x)
+    return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+
+valid_gaussians = df_plants.dropna(subset=['d15N_sd']).copy()
+
+# 2. Creazione griglia ORDINATA
+# sharex=True e sharey=True eliminano la ripetizione dei numeri sugli assi interni
+fig, axes = plt.subplots(6, 3, figsize=(16, 22), sharex=True)
+axes = axes.flatten()
+
+x_range = np.linspace(-5, 25, 1000)
+
+for i, (idx, row) in enumerate(valid_gaussians.iterrows()):
+    mu, sigma = row['d15N'], row['d15N_sd']
+    ax = axes[i]
+    
+    if sigma > 0:
+        y = gaussian(x_range, mu, sigma)
+        ax.plot(x_range, y, color='darkgreen', lw=1.5)
+        ax.fill_between(x_range, y, alpha=0.2, color='green')
+    else:
+        ax.axvline(mu, color='red', linestyle='--', alpha=0.7)
+        ax.text(mu, 0.5, '$\sigma=0$', color='red', transform=ax.get_xaxis_transform())
+
+    # Titolo piccolo e pulito dentro il box o appena sopra
+    ax.set_title(f"{row['Species'][:20]}...", fontsize=9, pad=3)
+    ax.grid(True, linestyle=':', alpha=0.3)
+
+# 3. REGOLAZIONE SPAZI (Il punto cruciale)
+# hspace: spazio verticale tra i grafici
+# wspace: spazio orizzontale tra i grafici
+fig.subplots_adjust(hspace=0.6, wspace=0.3, top=0.95, bottom=0.05, left=0.1, right=0.9)
+
+# Etichette globali per gli assi (per non ripeterle 18 volte)
+fig.text(0.5, 0.02, 'd15N Mean Value', ha='center', fontsize=14)
+fig.text(0.04, 0.5, 'Probability Density', va='center', rotation='vertical', fontsize=14)
+
+plt.savefig('plant_gaussians_ordered.png', dpi=300)
+plt.show()
