@@ -1,0 +1,15 @@
+# 2. Filtraggio per le "acaciae"
+# Cerchiamo tutte le righe dove la colonna 'Species' contiene la parola "Acacia"
+acacia_df = df_plants[df_plants['Species'].str.contains('Acacia', case=False)].copy()
+
+# 3. Calcolo della somma di d13C e d15N
+# Creiamo una serie temporanea con la somma dei due valori
+acacia_sum = acacia_df['d13C'] + acacia_df['d15N']
+
+# 4. Calcolo di media e deviazione standard
+mean_acacia = acacia_sum.mean()
+std_acacia = acacia_sum.std()
+
+# 5. Stampa dei risultati
+print(f"Media della somma (d13C + d15N): {mean_acacia:.4f}")
+print(f"Deviazione standard della somma: {std_acacia:.4f}")
