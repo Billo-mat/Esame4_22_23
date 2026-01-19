@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import pymc as pm
+import arviz as az
+
+# 1. Caricamento dati
+# Assicurati che il file Plant_data.csv sia nella stessa cartella dello script
+df_plants = pd.read_csv('Plant_data.csv', sep=';')
+
+# 2. Definizione del modello
+# Utilizziamo C_cont come predittore (C) e N_cont come variabile osservata
+with pm.Model() as model:
+    # Parametri alpha e beta (Priors)
+    # Media 0, Deviazione Standard 5
+    alpha = pm.Normal('alpha', mu=0, sigma=5)
+    beta = pm.Normal('beta', mu=0, sigma=5)
+    
+    # Sigma (errore) - Distribuzione esponenziale con lambda = 1
+    sigma = pm.Exponential('sigma', lam=1)
+    
+    # Media della distribuzione (mu)
+    # Equation: alpha + beta * C_cont
+    mu = alpha + beta * df_plants['C_cont'].values
+    
+    # Likelihood (Verosimiglianza)
+    # L'osservato N_cont è distribuito normalmente attorno a mu con deviazione sigma
+    y_obs = pm.Normal('y_obs', mu=mu, sigma=sigma, observed=df_plants['N_cont'].values)
+    
+    # 3. Campionamento
+    # Esegue l'algoritmo NUTS per stimare i parametri
+    trace = pm.sample(1000, tune=1000, chains=2, return_inferencedata=True)
+
+# 4. Visualizzazione dei risultati
+# Genera il grafico della distribuzione a posteriori (come richiesto)
+az.plot_posterior(trace)
+plt.tight_layout()
+plt.show()
+
+# Stampa il riassunto statistico (media, hdi, ecc.)
+print(az.summary(trace))
