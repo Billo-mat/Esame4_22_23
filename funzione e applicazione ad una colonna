@@ -1,0 +1,35 @@
+def secret_sauce(plant_type: str, d13c: float, percentage: float) -> float:
+    """
+    Applica una percentuale al valore d13C in base al tipo di pianta.
+    
+    Se la pianta è "C3", restituisce d13C * percentage.
+    Se la pianta è "C4", restituisce d13C * (1 - percentage).
+
+    >>> secret_sauce("C3", 30.0, 0.1)
+    3.0
+    >>> secret_sauce("C4", 30.0, 0.1)
+    27.0
+    """
+    if plant_type == "C3":
+        return d13c * percentage
+    elif plant_type == "C4":
+        return d13c * (1 - percentage)
+    else:
+        # Opzionale: gestione di tipi non previsti
+        return 0.0
+
+# Per eseguire il test automatico incluso nella docstring:
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
+# 1. Applichiamo la funzione secret_sauce riga per riga
+# Dividiamo C_cont per 100 per scalarlo correttamente (da 0-100 a 0-1)
+df_plants['sauce_result'] = df_plants.apply(
+    lambda row: secret_sauce(row['Plant_type'], row['d13C'], row['C_cont'] / 100), 
+    axis=1
+)
+
+# 2. Visualizziamo i primi risultati per conferma
+print(df_plants[['Plant_type', 'd13C', 'C_cont', 'sauce_result']].head())
+
