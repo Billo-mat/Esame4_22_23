@@ -1,0 +1,12 @@
+import pandas as pd
+
+# 1. Caricamento del dataset
+# Usiamo sep=';' perché il file utilizza il punto e virgola come separatore
+df_plants = pd.read_csv('Plant_data.csv', sep=';')
+
+# 2. Creazione della colonna 'wooden'
+# La colonna sarà True se Plant_part è "wood" oppure "bark"
+df_plants['wooden'] = df_plants['Plant_part'].isin(['wood', 'bark'])
+
+# 3. Verifica del risultato
+print(df_plants[['Plant_part', 'wooden']].head())
