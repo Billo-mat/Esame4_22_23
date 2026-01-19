@@ -1,0 +1,27 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Caricamento del dataset
+df_plants = pd.read_csv('Plant_data.csv', sep=';')
+
+# 2. Creazione dello scatter plot
+plt.figure(figsize=(10, 6))
+
+# Tipi unici di parti della pianta per gestire colori e legenda
+plant_parts = df_plants['Plant_part'].unique()
+
+# Iteriamo su ogni parte della pianta per disegnarla con un colore diverso
+for part in plant_parts:
+    subset = df_plants[df_plants['Plant_part'] == part]
+    plt.scatter(subset['d13C'], subset['d15N'], label=part, alpha=0.7, edgecolors='w', s=60)
+
+# 3. Formattazione del grafico
+plt.title('Scatter plot of d13C vs. d15N')
+plt.xlabel('d13C (‰)')
+plt.ylabel('d15N (‰)')
+plt.legend(title='Plant Part', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True, linestyle='--', alpha=0.5)
+
+# 4. Salvataggio
+plt.tight_layout() # Per evitare che la legenda venga tagliata
+plt.show()
